@@ -41,7 +41,13 @@ public class SilkmothEntity extends AmbientCreature {
     }
 
     private float getNewRotationDistance() {
-        return 0.5F + Services.PLATFORM.getConfig().silkmothRotationMaxRange * this.random.nextFloat();
+        try {
+            if (Services.PLATFORM != null) {
+                return 0.5F + Services.PLATFORM.getConfig().silkmothRotationMaxRange * this.random.nextFloat();
+            }
+        } catch (Exception e) {
+        }
+        return 0.5F + 2.0F * this.random.nextFloat();
     }
 
     @Override
@@ -63,13 +69,22 @@ public class SilkmothEntity extends AmbientCreature {
 
         if(this.tickCount >= 24000){
             //The silkmoth dies from oldness.
-            if(!this.hasCustomName() && Services.PLATFORM.getConfig().silkmothMustDie)
-                this.hurt(this.damageSources().starve(), 20.0F);
+            try {
+                if(!this.hasCustomName() && Services.PLATFORM != null && Services.PLATFORM.getConfig().silkmothMustDie)
+                    this.hurt(this.damageSources().starve(), 20.0F);
+            } catch (Exception e) {
+            }
         }
 
-        if(this.random.nextInt(Services.PLATFORM.getConfig().silkmothRotationChange) == 0){
-            //Randomly changes the rotation pos.
-            this.changeRotationPos();
+        try {
+            if(Services.PLATFORM != null && this.random.nextInt(Services.PLATFORM.getConfig().silkmothRotationChange) == 0){
+                //Randomly changes the rotation pos.
+                this.changeRotationPos();
+            }
+        } catch (Exception e) {
+            if(this.random.nextInt(100) == 0){
+                this.changeRotationPos();
+            }
         }
 
         BlockPos pos = this.getEntityData().get(ROTATION_POS);
@@ -181,7 +196,11 @@ public class SilkmothEntity extends AmbientCreature {
     @Nullable
     @Override
     public SoundEvent getAmbientSound() {
-        return !Services.PLATFORM.getConfig().silkmothMute && this.random.nextInt(4) == 0 ? SoundEvents.PARROT_FLY : null;
+        try {
+            return Services.PLATFORM != null && !Services.PLATFORM.getConfig().silkmothMute && this.random.nextInt(4) == 0 ? SoundEvents.PARROT_FLY : null;
+        } catch (Exception e) {
+            return this.random.nextInt(4) == 0 ? SoundEvents.PARROT_FLY : null;
+        }
     }
 
     @Override

@@ -143,18 +143,22 @@ public class SoilCropsBlock extends CropBlock implements IBlockGeneration {
     }
 
     private boolean isModCompatible(BlockState stateOn) {
-        if (Services.PLATFORM.isModLoaded("farmersdelight") && stateOn.is(getBlockFromRegistry("farmersdelight:rich_soil_farmland")))
-            return true;
+        try {
+            if (Services.PLATFORM != null && Services.PLATFORM.isModLoaded("farmersdelight") && stateOn.is(getBlockFromRegistry("farmersdelight:rich_soil_farmland")))
+                return true;
 
-        else if (Services.PLATFORM.isModLoaded("aether") && stateOn.is(getBlockFromRegistry("aether:aether_farmland")))
-            return true;
+            else if (Services.PLATFORM != null && Services.PLATFORM.isModLoaded("aether") && stateOn.is(getBlockFromRegistry("aether:aether_farmland")))
+                return true;
 
-        else return Services.PLATFORM.isModLoaded("immersive_weathering") && (
-                    stateOn.is(getBlockFromRegistry("immersive_weathering:loamy_farmland")) ||
-                    stateOn.is(getBlockFromRegistry("immersive_weathering:earthen_clay_farmland")) ||
-                    stateOn.is(getBlockFromRegistry("immersive_weathering:sandy_farmland")) ||
-                    stateOn.is(getBlockFromRegistry("immersive_weathering:silty_farmland"))
-            );
+            else return Services.PLATFORM != null && Services.PLATFORM.isModLoaded("immersive_weathering") && (
+                        stateOn.is(getBlockFromRegistry("immersive_weathering:loamy_farmland")) ||
+                        stateOn.is(getBlockFromRegistry("immersive_weathering:earthen_clay_farmland")) ||
+                        stateOn.is(getBlockFromRegistry("immersive_weathering:sandy_farmland")) ||
+                        stateOn.is(getBlockFromRegistry("immersive_weathering:silty_farmland"))
+                );
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private Block getBlockFromRegistry(String name) {
