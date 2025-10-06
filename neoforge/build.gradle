@@ -1,0 +1,73 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.neoforged.moddev'
+}
+
+neoForge {
+    version = neoforge_version
+    // Automatically enable neoforge AccessTransformers if the file exists
+    def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers.add(at.absolutePath)
+    }
+    parchment {
+        minecraftVersion = parchment_minecraft
+        mappingsVersion = parchment_version
+    }
+
+    repositories {
+        maven {
+            url "https://www.cursemaven.com"
+            content {
+                includeGroup "curse.maven"
+            }
+        }
+        maven {
+            url = "https://api.modrinth.com/maven"
+        }
+    }
+
+    runs {
+        configureEach {
+            systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
+            ideName = "NeoForge ${it.name.capitalize()} (${project.path})" // Unify the run config names with fabric
+        }
+        client {
+            client()
+        }
+        data {
+            data()
+            programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').absolutePath, '--existing', file('src/main/resources/').absolutePath
+        }
+        server {
+            server()
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+dependencies {
+    //modImplementation("maven.modrinth:yacl:${project.yacl_version}-neoforge")
+
+    implementation "curse.maven:yacl-667299:7036475"
+
+    // Mod compatibility
+
+    runtimeOnly("maven.modrinth:rei:b8gfS9Je")
+    runtimeOnly("maven.modrinth:cloth-config:izKINKFg")
+    runtimeOnly("maven.modrinth:architectury-api:ZxYGwlk0")
+    runtimeOnly("maven.modrinth:geckolib:RVIo5f6E")
+
+    //modRuntimeOnly("maven.modrinth:lets-do-vinery:YpD6ue8A")
+    runtimeOnly("maven.modrinth:farmers-delight:opCbq7uB")
+    runtimeOnly("maven.modrinth:critters-and-companions:C0bnFRAK")
+
+    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
+    implementation 'org.jetbrains:annotations:26.0.2'
+}
